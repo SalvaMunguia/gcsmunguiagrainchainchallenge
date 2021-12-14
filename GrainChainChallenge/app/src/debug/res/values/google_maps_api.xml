@@ -1,0 +1,24 @@
+<resources>
+    <!--
+    TODO: Before you run your application, you need a Google Maps API key.
+
+    To get one, follow this link, follow the directions and press "Create" at the end:
+
+    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=80:B5:BF:14:C6:64:69:52:F5:09:06:33:5E:87:AC:F2:D0:0B:63:63%3Bcom.salva.grainchainchallenge.presentation.ui
+
+    You can also add your credentials to an existing key, using these values:
+
+    Package name:
+    com.salva.grainchainchallenge.presentation.ui
+
+    SHA-1 certificate fingerprint:
+    80:B5:BF:14:C6:64:69:52:F5:09:06:33:5E:87:AC:F2:D0:0B:63:63
+
+    Alternatively, follow the directions here:
+    https://developers.google.com/maps/documentation/android/start#get-key
+
+    Once you have your key (it starts with "AIza"), replace the "google_maps_key"
+    string in this file.
+    -->
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBqF0DTAVKoIjMZBU8ctYr3G3vSCHO6zoY</string>
+</resources>
