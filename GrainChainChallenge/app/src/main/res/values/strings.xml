@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">GrainChainChallenge</string>
+
+    <!--Maps-->
+    <string name="btnSave">Grabar ruta</string>
+    <string name="btnStop">Detener y Guardar ruta</string>
+
+    <!--AlertPermisson-->
+    <string name="title_alert">Aviso</string>
+    <string name="description_alert">Es necesario que se habilite los permisos de ubicación para el correcto funcionamiento de este aplicativo</string>
+    <string name="enable_button">Habilitar permisos</string>
+
+    <!--AlertGPS-->
+    <string name="title_gps">Aviso</string>
+    <string name="description_gps">Es necesario encender el GPS para poder usar el aplicativo</string>
+    <string name="enable_gps">Ir a GPS</string>
+
 </resources>
