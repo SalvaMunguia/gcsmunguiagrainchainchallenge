@@ -50,6 +50,7 @@ class MapsFragment : Fragment() {
     private var listPoints = ArrayList<LatLng>()
     private var isTracking = false
     private val viewModel by viewModels<RouteViewModel>()
+    private lateinit var adapter: RouteAdapter
     private val callback = OnMapReadyCallback { googleMap ->
         gMap = googleMap
 
@@ -67,6 +68,16 @@ class MapsFragment : Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        try {
+            if (adapter != null) {
+                adapter.notifyDataSetChanged()
+            }
+        }catch (e:Exception){}
+
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
@@ -78,7 +89,7 @@ class MapsFragment : Fragment() {
             if(!isTracking) {
                 myLocationPermissons()
                 startLocationService()
-                binding.btnSave.setText(resources.getString(R.string.btnStop))
+                binding.btnSave.setText(resources.getString(R.string.btn_Stop))
                 binding.btnSave.setBackgroundColor(Color.RED)
                 binding.btnSave.setTextColor(Color.WHITE)
                 isTracking = true
@@ -88,7 +99,7 @@ class MapsFragment : Fragment() {
                 binding.btnSave.setText("Grabar ruta")
                 binding.btnSave.setBackgroundColor(Color.BLUE)
                 binding.btnSave.setTextColor(Color.WHITE)
-                binding.btnSave.setText(resources.getString(R.string.btnSave))
+                binding.btnSave.setText(resources.getString(R.string.btn_Save))
                 isTracking = false
                 LocationService.isStartService.value = false
 
@@ -114,11 +125,11 @@ class MapsFragment : Fragment() {
 
         var distance = 0.0
         distance =  distanceRoute(listPoints)/1000
-        var time = Utils.getFormattedTime(timer)
+        var time = Utils.convertSecondsToHMmSs(timer)
 
 
         showMarket()
-        var routeData = RouteModel("",distance,time)
+        var routeData = RouteModel("",distance,time,Utils.convertListPointToString(listPoints))
         NameSaveRouteDialog.newInstance(routeData).show(parentFragmentManager,"")
 
     }
@@ -237,6 +248,7 @@ class MapsFragment : Fragment() {
                 binding.rvRouteList.visibility = View.VISIBLE
                 binding.txtLabelRoutes.visibility = View.VISIBLE
                 var adapter = RouteAdapter(it.reversed()) {
+                    requireActivity().supportFragmentManager.beginTransaction().replace(R.id.main_container,DetailRouteFragment.newInstance(it)).addToBackStack("detail").commit()
 
                 }
 

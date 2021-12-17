@@ -2,8 +2,8 @@
     <string name="app_name">GrainChainChallenge</string>
 
     <!--Maps-->
-    <string name="btnSave">Grabar ruta</string>
-    <string name="btnStop">Detener y Guardar ruta</string>
+    <string name="btn_Save">Grabar ruta</string>
+    <string name="btn_Stop">Detener y Guardar ruta</string>
     <string name="label_routes">Tus Rutas Guardadas</string>
 
     <!--AlertPermisson-->
@@ -20,5 +20,14 @@
     <string name="question_dialog">¿Con que nombre quieres guardar esta ruta?</string>
     <string name="save_button_dialog">Guardar ruta</string>
     <string name="cancel_button_dialog">Cancelar</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--DialogSaveName-->
+    <string name="label_name">Nombre</string>
+    <string name="label_distance">Distancia</string>
+    <string name="label_time">Tiempo</string>
+    <string name="btn_share">Compartir</string>
+
 
 </resources>

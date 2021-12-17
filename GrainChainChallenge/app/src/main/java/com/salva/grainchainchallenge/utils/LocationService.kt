@@ -76,7 +76,7 @@ class LocationService : LifecycleService() {
         )
     }
     fun stopService(){
-        timeRoute.postValue(timeRun/1000)
+        timeRoute.postValue(timeRun)
         timeRun = 0L
         lapTime = 0L
         stopForeground(true)
@@ -91,8 +91,9 @@ class LocationService : LifecycleService() {
             while (isStartService.value!!) {
                 lapTime = System.currentTimeMillis() - timeStarted
                 //timeRoute.postValue((timeRun + lapTime)/1000)
-                timeRun += lapTime
-                delay(500)
+                timeRun = (timeRun + lapTime)/1000
+                Log.d("Tiempo","tiempo ${timeRun}")
+                delay(1000)
             }
 
         }

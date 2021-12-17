@@ -7,7 +7,11 @@ import android.location.Location
 import android.location.LocationManager
 import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.model.LatLng
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.lang.reflect.Type
 import java.text.DecimalFormat
+
 
 object Utils {
 
@@ -31,16 +35,22 @@ object Utils {
                 || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
-    fun distanceRoute(listPoints : ArrayList<LatLng>):Double{
+    fun distanceRoute(listPoints: ArrayList<LatLng>):Double{
         var distance = 0.0
 
         listPoints.forEachIndexed { index, point ->
 
             if(index>0){
                 var resultDistance = FloatArray(1)
-                var pointA = listPoints[index -1]
+                var pointA = listPoints[index - 1]
                 var pointB = point
-                Location.distanceBetween(pointA.latitude,pointA.longitude,pointB.latitude,pointB.longitude,resultDistance)
+                Location.distanceBetween(
+                    pointA.latitude,
+                    pointA.longitude,
+                    pointB.latitude,
+                    pointB.longitude,
+                    resultDistance
+                )
                 distance += resultDistance[0]
             }
         }
@@ -48,20 +58,25 @@ object Utils {
         return distance
     }
 
-    fun getFormattedTime(sec: Long): String {
-
-        val hours = sec /3600
-        val minutes = sec /60%60
-        val seconds = sec %60
-
-        return "${if(hours < 10) "0" else ""}$hours:" +
-                "${if(minutes < 10) "0" else ""}$minutes:" +
-                "${if(seconds < 10) "0" else ""}$seconds"
-
+    fun convertSecondsToHMmSs(seconds: Long): String {
+        val s = seconds % 60
+        val m = seconds / 60 % 60
+        val h = seconds / (60 * 60) % 24
+        return String.format("%d:%02d:%02d", h, m, s)
     }
 
     fun convertDistanceToFormat(quantity: Double): String{
         return DecimalFormat("#.###").format(quantity)
+    }
+
+    fun convertListPointToString(data: ArrayList<LatLng>):String{
+        val gson = Gson()
+        return gson.toJson(data)
+    }
+
+    fun convertStringToListPoints(data: String): ArrayList<LatLng>{
+        val listType: Type = object : TypeToken<ArrayList<LatLng>>() {}.type
+        return Gson().fromJson(data, listType)
     }
 
 }
