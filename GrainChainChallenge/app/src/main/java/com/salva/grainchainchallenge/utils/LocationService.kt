@@ -9,17 +9,25 @@ import android.os.IBinder
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
+import com.salva.grainchainchallenge.utils.Constans.UPDATE_INTERVAL
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-class LocationService : Service() {
+class LocationService : LifecycleService() {
     var fusedLocationProviderClient: FusedLocationProviderClient? = null
     var locationCallback: LocationCallback? = null
 
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
-    }
+    private var isTimerEnabled = false
+    private var timeStarted = 0L
+    private var lapTime = 0L
+    private var timeRun = 0L
+
+
 
     override fun onCreate() {
         super.onCreate()
@@ -40,18 +48,26 @@ class LocationService : Service() {
 
             }
         }
+        isStartService.observe(this, Observer {
+            if(!it){
+                stopService()
+            }else{
+                startTimer()
+            }
+        })
     }
 
    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
        geoLocation.value = ArrayList()
-        requestLocation()
-        return super.onStartCommand(intent, flags, startId)
+       requestLocation()
+       startTimer()
+       return super.onStartCommand(intent, flags, startId)
     }
 
     @SuppressLint("MissingPermission")
     private fun requestLocation() {
         val locationRequest = LocationRequest()
-        locationRequest.setInterval(1000)
+        locationRequest.setInterval(UPDATE_INTERVAL)
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
         fusedLocationProviderClient!!.requestLocationUpdates(
             locationRequest,
@@ -59,12 +75,35 @@ class LocationService : Service() {
             Looper.myLooper()
         )
     }
+    fun stopService(){
+        timeRoute.postValue(timeRun/1000)
+        timeRun = 0L
+        lapTime = 0L
+        stopForeground(true)
+        stopSelf()
+
+    }
+    private fun startTimer() {
+
+        timeStarted = System.currentTimeMillis()
+        isTimerEnabled = true
+        CoroutineScope(Dispatchers.Main).launch {
+            while (isStartService.value!!) {
+                lapTime = System.currentTimeMillis() - timeStarted
+                //timeRoute.postValue((timeRun + lapTime)/1000)
+                timeRun += lapTime
+                delay(500)
+            }
+
+        }
+    }
     companion object {
-        val isTracking = MutableLiveData<Boolean>()
+        val isStartService = MutableLiveData<Boolean>()
         val geoLocation =
             MutableLiveData<ArrayList<LatLng>>()
-        val timeRunInSeconds =
+        val timeRoute =
             MutableLiveData<Long>()
 
     }
+
 }

@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.text.TextUtils.replace
 import com.salva.grainchainchallenge.R
 import com.salva.grainchainchallenge.databinding.ActivityMainBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding

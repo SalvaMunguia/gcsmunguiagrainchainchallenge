@@ -17,7 +17,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener
@@ -28,12 +31,20 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.salva.grainchainchallenge.R
+import com.salva.grainchainchallenge.data.model.RouteModel
 import com.salva.grainchainchallenge.databinding.FragmentMapsBinding
+import com.salva.grainchainchallenge.presentation.adapter.RouteAdapter
+import com.salva.grainchainchallenge.presentation.customviews.NameSaveRouteDialog
+import com.salva.grainchainchallenge.presentation.viewmodel.RouteViewModel
 import com.salva.grainchainchallenge.utils.LocationService
 import com.salva.grainchainchallenge.utils.Utils
+import com.salva.grainchainchallenge.utils.Utils.distanceRoute
+import dagger.hilt.android.AndroidEntryPoint
+
 
 
 @Suppress("DEPRECATION")
+@AndroidEntryPoint
 class MapsFragment : Fragment() {
     private lateinit var binding: FragmentMapsBinding
     var gMap: GoogleMap? = null
@@ -41,7 +52,7 @@ class MapsFragment : Fragment() {
     private lateinit var receiver: LocationBroadcastReceiver
     private var listPoints = ArrayList<LatLng>()
     private var isTracking = false
-
+    private val viewModel by viewModels<RouteViewModel>()
     private val callback = OnMapReadyCallback { googleMap ->
         gMap = googleMap
 
@@ -64,6 +75,8 @@ class MapsFragment : Fragment() {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
         receiver = LocationBroadcastReceiver()
+        binding.rvRouteList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+
         binding.btnSave.setOnClickListener{
             if(!isTracking) {
                 myLocationPermissons()
@@ -72,28 +85,42 @@ class MapsFragment : Fragment() {
                 binding.btnSave.setBackgroundColor(Color.RED)
                 binding.btnSave.setTextColor(Color.WHITE)
                 isTracking = true
+                gMap?.clear()
             }else{
-                requireActivity().unregisterReceiver(receiver)
+//                requireActivity().unregisterReceiver(receiver)
                 binding.btnSave.setText("Grabar ruta")
                 binding.btnSave.setBackgroundColor(Color.BLUE)
                 binding.btnSave.setTextColor(Color.WHITE)
                 binding.btnSave.setText(resources.getString(R.string.btnSave))
                 isTracking = false
+                LocationService.isStartService.value = false
+
             }
         }
+        loadRouteList()
         observers()
     }
+    private fun dataRoute(timer : Long){
 
-    override fun onResume() {
-        super.onResume()
+        var distance = 0.0
+        distance =  distanceRoute(listPoints)/1000
+        var time = Utils.getFormattedTime(timer)
 
+
+
+        var routeData = RouteModel("",distance,time)
+        NameSaveRouteDialog.newInstance(routeData).show(parentFragmentManager,"")
 
     }
+
+
+
     private fun startLocationService(){
         val filter = IntentFilter("ACT_LOC")
        requireActivity().registerReceiver(receiver, filter)
         val intent = Intent(requireContext(), LocationService::class.java)
         requireActivity().startService(intent)
+        LocationService.isStartService.value = true
     }
     @SuppressLint("MissingPermission")
     private fun myLocationPermissons() {
@@ -181,13 +208,36 @@ class MapsFragment : Fragment() {
                addPolyline()
            }
        })
+       LocationService.timeRoute.observe(viewLifecycleOwner, Observer {
+           dataRoute(it)
+       })
+
+       viewModel.saveSuccess.observe(viewLifecycleOwner, Observer {
+           loadRouteList()
+       })
 
     }
+    private fun loadRouteList(){
+        viewModel.routesInDB.observe(viewLifecycleOwner, Observer {
 
-    override fun onPause() {
-        super.onPause()
-        requireActivity().unregisterReceiver(receiver)
+            if(it.isEmpty()){
+                binding.rvRouteList.visibility = View.GONE
+                binding.txtLabelRoutes.visibility = View.GONE
+            }else {
+                binding.rvRouteList.visibility = View.VISIBLE
+                binding.txtLabelRoutes.visibility = View.VISIBLE
+                var adapter = RouteAdapter(it) {
+
+                }
+
+                binding.rvRouteList.adapter = adapter
+                adapter.notifyDataSetChanged()
+            }
+
+        })
     }
+
+
     private fun addPolyline() {
         if(listPoints.isNotEmpty() && listPoints.size > 1) {
             val preLastLatLng = listPoints[listPoints.size - 2]

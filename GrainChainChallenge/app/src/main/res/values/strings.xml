@@ -4,6 +4,7 @@
     <!--Maps-->
     <string name="btnSave">Grabar ruta</string>
     <string name="btnStop">Detener y Guardar ruta</string>
+    <string name="label_routes">Tus Rutas Guardadas</string>
 
     <!--AlertPermisson-->
     <string name="title_alert">Aviso</string>
@@ -14,5 +15,10 @@
     <string name="title_gps">Aviso</string>
     <string name="description_gps">Es necesario encender el GPS para poder usar el aplicativo</string>
     <string name="enable_gps">Ir a GPS</string>
+
+    <!--DialogSaveName-->
+    <string name="question_dialog">¿Con que nombre quieres guardar esta ruta?</string>
+    <string name="save_button_dialog">Guardar ruta</string>
+    <string name="cancel_button_dialog">Cancelar</string>
 
 </resources>
