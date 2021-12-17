@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.salva.grainchainchallenge.data.model.RouteModel
 import com.salva.grainchainchallenge.databinding.ItemRouteBinding
+import com.salva.grainchainchallenge.utils.Utils
 
 class RouteAdapter (val data: List<RouteModel>,val listener: (RouteModel) ->Unit) :
     RecyclerView.Adapter<RouteAdapter.RouteViewHolder>() {
@@ -26,7 +27,7 @@ class RouteAdapter (val data: List<RouteModel>,val listener: (RouteModel) ->Unit
         fun bind(route: RouteModel, listener: (RouteModel) -> Unit) {
             binding.apply {
                 binding.txtNameRoute.text = route.nameRoute
-                binding.txtDistanceRoute.text = route.distanceRoute.toString()
+                binding.txtDistanceRoute.text = Utils.convertDistanceToFormat(route.distanceRoute) + "km"
 
             }
 

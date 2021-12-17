@@ -7,6 +7,7 @@ import android.location.Location
 import android.location.LocationManager
 import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.model.LatLng
+import java.text.DecimalFormat
 
 object Utils {
 
@@ -57,6 +58,10 @@ object Utils {
                 "${if(minutes < 10) "0" else ""}$minutes:" +
                 "${if(seconds < 10) "0" else ""}$seconds"
 
+    }
+
+    fun convertDistanceToFormat(quantity: Double): String{
+        return DecimalFormat("#.###").format(quantity)
     }
 
 }

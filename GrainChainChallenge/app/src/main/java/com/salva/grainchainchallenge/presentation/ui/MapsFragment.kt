@@ -26,10 +26,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.JointType
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.*
 import com.salva.grainchainchallenge.R
 import com.salva.grainchainchallenge.data.model.RouteModel
 import com.salva.grainchainchallenge.databinding.FragmentMapsBinding
@@ -100,6 +97,19 @@ class MapsFragment : Fragment() {
         loadRouteList()
         observers()
     }
+
+    private fun showMarket(){
+        gMap!!.addMarker(
+            MarkerOptions()
+                .title("Inicio del recorrido")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                .position(listPoints[0]))!!
+        gMap!!.addMarker(
+            MarkerOptions()
+                .title("Fin del recorrido")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                .position(listPoints[listPoints.size - 1]))!!
+    }
     private fun dataRoute(timer : Long){
 
         var distance = 0.0
@@ -107,7 +117,7 @@ class MapsFragment : Fragment() {
         var time = Utils.getFormattedTime(timer)
 
 
-
+        showMarket()
         var routeData = RouteModel("",distance,time)
         NameSaveRouteDialog.newInstance(routeData).show(parentFragmentManager,"")
 
@@ -226,7 +236,7 @@ class MapsFragment : Fragment() {
             }else {
                 binding.rvRouteList.visibility = View.VISIBLE
                 binding.txtLabelRoutes.visibility = View.VISIBLE
-                var adapter = RouteAdapter(it) {
+                var adapter = RouteAdapter(it.reversed()) {
 
                 }
 
